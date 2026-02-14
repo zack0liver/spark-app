@@ -684,6 +684,7 @@
   // ─── Auth ──────────────────────────────────────────────────
   googleSignIn.addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
     auth.signInWithPopup(provider).catch(err => {
       if (err.code !== 'auth/popup-closed-by-user') {
         showToast('Sign-in failed. Try again.');
