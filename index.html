@@ -682,14 +682,25 @@
   let toastTimeout = null;
 
   // ─── Auth ──────────────────────────────────────────────────
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
   googleSignIn.addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
-    auth.signInWithPopup(provider).catch(err => {
-      if (err.code !== 'auth/popup-closed-by-user') {
-        showToast('Sign-in failed. Try again.');
-      }
-    });
+    if (isMobile) {
+      auth.signInWithRedirect(provider);
+    } else {
+      auth.signInWithPopup(provider).catch(err => {
+        if (err.code !== 'auth/popup-closed-by-user') {
+          showToast('Sign-in failed. Try again.');
+        }
+      });
+    }
+  });
+
+  // Handle redirect result on mobile
+  auth.getRedirectResult().catch(err => {
+    if (err.code) showToast('Sign-in failed. Try again.');
   });
 
   signOutBtn.addEventListener('click', () => {
